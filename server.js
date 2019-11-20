@@ -4,7 +4,7 @@ var path = require('path');
 var firebase = require("firebase");
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 80;
 var firebaseConfig = {
     apiKey: "AIzaSyAFSN77CtgOKAQ2VmJpwS90QuLqjIjyhzI",
     authDomain: "moover-c222d.firebaseapp.com",
@@ -21,10 +21,6 @@ var database = firebase.database();
 
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
-
-    database.ref('riders').on('value', function (snapshot) {
-        console.log(snapshot.val());
-    });
 });
 
 io.on('connection', (socket) => {
@@ -35,6 +31,23 @@ io.on('connection', (socket) => {
         if (addedUser) return;
         // Check if already in available or booked
         // if not in both above add in available
+        var inAvailableOrBooked = true;
+        database.ref('available/' + driver.id)
+            .on('value', function (snapshot) {
+                if (snapshot.val() == null) {
+                    inAvailableOrBooked = false;
+                }
+            });
+
+        database.ref('booked/' + driver.id)
+            .on('value', function (snapshot) {
+                if (snapshot.val() == null) {
+                    inAvailableOrBooked = false;
+                }
+            });
+        if (!inAvailableOrBooked) {
+            database.ref('available').push(driver);
+        }
 
         socket.userid = driver.userid;
         addedUser = true;
@@ -53,7 +66,7 @@ io.on('connection', (socket) => {
     // send notification to drivers
     socket.on('give ride', (user) => {
         // if already in booked send back the ride to user
-        // otherwise send notifications to available riders
+        // otherwise send notifications to available drivers
     });
 
     // driver accepting ride
