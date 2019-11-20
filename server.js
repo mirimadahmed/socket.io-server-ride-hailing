@@ -32,26 +32,24 @@ io.on('connection', (socket) => {
 
     // when the driver connect emitted
     socket.on('connect driver', (driver) => {
+        console.log(driver);
         if (addedUser) return;
         // Check if already in available or booked
         // if not in both above add in available
-        var inAvailableOrBooked = true;
         database.ref('available/' + driver.id)
             .on('value', function (snapshot) {
                 if (snapshot.val() == null) {
-                    inAvailableOrBooked = false;
+                    database.ref('booked/' + driver.id)
+                        .on('value', function (snapshot) {
+                            if (snapshot.val() == null) {
+                                database.ref('available').push(driver);
+                            }
+                        });
                 }
             });
 
-        database.ref('booked/' + driver.id)
-            .on('value', function (snapshot) {
-                if (snapshot.val() == null) {
-                    inAvailableOrBooked = false;
-                }
-            });
-        if (!inAvailableOrBooked) {
-            database.ref('available').push(driver);
-        }
+
+
 
         socket.userid = driver.userid;
         addedUser = true;
