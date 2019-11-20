@@ -21,72 +21,52 @@ var database = firebase.database();
 
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
+
     database.ref('riders').on('value', function (snapshot) {
         console.log(snapshot.val());
     });
 });
 
-// Routing
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Chatroom
-
-var numUsers = 0;
-
 io.on('connection', (socket) => {
     var addedUser = false;
 
-    // when the client emits 'new message', this listens and executes
-    socket.on('new message', (data) => {
-        // we tell the client to execute 'new message'
-        socket.broadcast.emit('new message', {
-            username: socket.username,
-            message: data
-        });
-    });
-
-    // when the client emits 'add user', this listens and executes
-    socket.on('add user', (username) => {
+    // when the driver connect emitted
+    socket.on('connect driver', (driver) => {
         if (addedUser) return;
+        // Check if already in available or booked
+        // if not in both above add in available
 
-        // we store the username in the socket session for this client
-        socket.username = username;
-        ++numUsers;
+        socket.userid = driver.userid;
         addedUser = true;
-        socket.emit('login', {
-            numUsers: numUsers
-        });
-        // echo globally (all clients) that a person has connected
-        socket.broadcast.emit('user joined', {
-            username: socket.username,
-            numUsers: numUsers
-        });
     });
 
-    // when the client emits 'typing', we broadcast it to others
-    socket.on('typing', () => {
-        socket.broadcast.emit('typing', {
-            username: socket.username
-        });
+    // when the user connect emitted
+    socket.on('connect user', (user) => {
+        if (addedUser) return;
+        // if already in booked send back the ride to user
+
+        socket.userid = user.userid;
+        addedUser = true;
     });
 
-    // when the client emits 'stop typing', we broadcast it to others
-    socket.on('stop typing', () => {
-        socket.broadcast.emit('stop typing', {
-            username: socket.username
-        });
+    // ask for driver
+    // send notification to drivers
+    socket.on('give ride', (user) => {
+        // if already in booked send back the ride to user
+        // otherwise send notifications to available riders
     });
 
-    // when the user disconnects.. perform this
+    // driver accepting ride
+    // send notification to driver and user
+    socket.on('accept ride', (driver) => {
+        // if first one send back to user
+    });
+
+    // when the driver or user disconnects
     socket.on('disconnect', () => {
         if (addedUser) {
-            --numUsers;
+            // if available remove from there
 
-            // echo globally that this client has left
-            socket.broadcast.emit('user left', {
-                username: socket.username,
-                numUsers: numUsers
-            });
         }
     });
 });
