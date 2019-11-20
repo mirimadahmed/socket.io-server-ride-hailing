@@ -4,7 +4,7 @@ var path = require('path');
 var firebase = require("firebase");
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 3000;
 var firebaseConfig = {
     apiKey: "AIzaSyAFSN77CtgOKAQ2VmJpwS90QuLqjIjyhzI",
     authDomain: "moover-c222d.firebaseapp.com",
