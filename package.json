@@ -1,0 +1,16 @@
+{
+    "name": "moover-server",
+    "version": "0.0.0",
+    "description": "A simple socket server to run moover app",
+    "main": "server.js",
+    "author": "Mir Imad Ahmed",
+    "private": true,
+    "license": "BSD",
+    "dependencies": {
+        "express": "4.13.4",
+        "firebase": "^7.4.0"
+    },
+    "scripts": {
+        "start": "node server.js"
+    }
+}
