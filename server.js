@@ -19,9 +19,13 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
+
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
+
+// Routing
+app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket) => {
     var addedUser = false;
