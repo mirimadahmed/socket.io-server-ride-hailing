@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
                         .on('value', function (snapshot) {
                             if (snapshot.val() == null) {
                                 database.ref('available').push(driver);
+                                socket.join('available');
                             }
                         });
                 }
@@ -67,7 +68,7 @@ io.on('connection', (socket) => {
             .on('value', function (snapshot) {
                 bookedItems = snapshot.val();
                 Object.keys(bookedItems).forEach(element => {
-                    if (bookedItems[element].userid == user.id) {
+                    if (bookedItems[element].userid == user.userid) {
                         socket.userid = user.userid;
                         addedUser = true;
                         fn(bookedItems[element]);
@@ -83,9 +84,14 @@ io.on('connection', (socket) => {
 
     // ask for driver
     // send notification to drivers
-    socket.on('give ride', (user) => {
-        // if already in booked send back the ride to user
-        // otherwise send notifications to available drivers
+    socket.on('give ride', (ride, fn) => {
+        // send notifications to available drivers
+        if (Object.keys(socket.in('available')).length > 0) {
+            socket.to('available').emit('ride request', ride);
+            fn('Sent to drivers');
+        } else {
+            fn('No drivers available');
+        }
     });
 
     // driver accepting ride
@@ -95,10 +101,12 @@ io.on('connection', (socket) => {
     });
 
     // when the driver or user disconnects
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (driver) => {
         if (addedUser) {
             // if available remove from there
+            database.ref('available/' + driver.id).on('value', snapshot => {
 
+            })
         }
     });
 });
