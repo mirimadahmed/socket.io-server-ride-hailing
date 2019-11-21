@@ -33,7 +33,10 @@ io.on('connection', (socket) => {
     // when the driver connect emitted
     socket.on('connect driver', (driver, fn) => {
         console.log(driver);
-        if (addedUser) return;
+        if (addedUser) {
+            fn('Already connected');
+            return;
+        }
         // Check if already in available or booked
         // if not in both above add in available
         database.ref('available/' + driver.id)
@@ -54,8 +57,23 @@ io.on('connection', (socket) => {
 
     // when the user connect emitted
     socket.on('connect user', (user, fn) => {
-        if (addedUser) return;
+        console.log(user);
+        if (addedUser) {
+            fn('Already connected');
+            return;
+        }
         // if already in booked send back the ride to user
+        database.ref('booked')
+            .on('value', function (snapshot) {
+                snapshot.val().forEach(element => {
+                    if (element.userid == user.id) {
+                        socket.userid = user.userid;
+                        addedUser = true;
+                        fn(element);
+                        return;
+                    }
+                });
+            });
 
         socket.userid = user.userid;
         addedUser = true;
