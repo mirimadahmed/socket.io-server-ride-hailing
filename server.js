@@ -65,11 +65,12 @@ io.on('connection', (socket) => {
         // if already in booked send back the ride to user
         database.ref('booked')
             .on('value', function (snapshot) {
-                snapshot.val().forEach(element => {
-                    if (element.userid == user.id) {
+                bookedItems = snapshot.val();
+                Object.keys(bookedItems).forEach(element => {
+                    if (bookedItems[element].userid == user.id) {
                         socket.userid = user.userid;
                         addedUser = true;
-                        fn(element);
+                        fn(bookedItems[element]);
                         return;
                     }
                 });
