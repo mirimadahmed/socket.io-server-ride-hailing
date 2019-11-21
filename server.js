@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
     var addedUser = false;
 
     // when the driver connect emitted
-    socket.on('connect driver', (driver) => {
+    socket.on('connect driver', (driver, fn) => {
         console.log(driver);
         if (addedUser) return;
         // Check if already in available or booked
@@ -47,21 +47,19 @@ io.on('connection', (socket) => {
                         });
                 }
             });
-
-
-
-
         socket.userid = driver.userid;
         addedUser = true;
+        fn('Connected');
     });
 
     // when the user connect emitted
-    socket.on('connect user', (user) => {
+    socket.on('connect user', (user, fn) => {
         if (addedUser) return;
         // if already in booked send back the ride to user
 
         socket.userid = user.userid;
         addedUser = true;
+        fn('Connected');
     });
 
     // ask for driver
