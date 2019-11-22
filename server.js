@@ -14,24 +14,26 @@ var firebaseConfig = {
     messagingSenderId: "747533031517",
     appId: "1:747533031517:web:f2a12d000f1152971ad5b4"
 };
-
+var bookedItems = [];
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
 
-server.listen(port, () => {
-    console.log('Server listening at port %d', port);
-});
-
+// server.listen(port, () => {
+//     console.log('Server listening at port %d', port);
+// });
+server.listen(3000,"192.168.10.19");
 // Routing
 app.use(express.static(path.join(__dirname, 'public')));
-
 io.on('connection', (socket) => {
+    console.log("connected");
+    socket.emit("connect driver", "goooddd");
     var addedUser = false;
 
     // when the driver connect emitted
-    socket.on('connect driver', (driver, fn) => {
+    socket.on('connect driver', (driver) => {
+        console.log("driver data");
         console.log(driver);
         if (addedUser) {
             fn('Already connected');
@@ -39,33 +41,36 @@ io.on('connection', (socket) => {
         }
         // Check if already in available or booked
         // if not in both above add in available
+        console.log(driver.id);
         database.ref('available/' + driver.id)
             .on('value', function (snapshot) {
                 if (snapshot.val() == null) {
                     database.ref('booked/' + driver.id)
                         .on('value', function (snapshot) {
                             if (snapshot.val() == null) {
-                                database.ref('available').push(driver);
+                                database.ref('available').child(driver.id).set(driver);
                                 socket.join('available');
                             }
                         });
                 }
             });
-        socket.userid = driver.userid;
+        socket.userid = driver;
         addedUser = true;
-        fn('Connected');
+        // fn('Connected');
     });
 
     // when the user connect emitted
-    socket.on('connect user', (user, fn) => {
+    socket.on('connect user', (user) => {
         console.log(user);
+        console.log(user.userid);
         if (addedUser) {
-            fn('Already connected');
+            // fn('Already connected');
             return;
         }
         // if already in booked send back the ride to user
         database.ref('booked')
             .on('value', function (snapshot) {
+                if(snapshot.val() != null)
                 bookedItems = snapshot.val();
                 Object.keys(bookedItems).forEach(element => {
                     if (bookedItems[element].userid == user.userid) {
@@ -79,18 +84,19 @@ io.on('connection', (socket) => {
 
         socket.userid = user.userid;
         addedUser = true;
-        fn('Connected');
+        // fn('Connected');
     });
 
     // ask for driver
     // send notification to drivers
-    socket.on('give ride', (ride, fn) => {
+    socket.on('give ride', (ride) => {
         // send notifications to available drivers
+        console.log(ride);
         if (Object.keys(socket.in('available')).length > 0) {
             socket.to('available').emit('ride request', ride);
-            fn('Sent to drivers');
+            // fn('Sent to drivers');
         } else {
-            fn('No drivers available');
+            // fn('No drivers available');
         }
     });
 
@@ -101,7 +107,8 @@ io.on('connection', (socket) => {
     });
 
     // when the driver or user disconnects
-    socket.on('disconnect', (driver) => {
+    socket.on('disconnect', (driver) => {   
+        console.log("driver disconnected");
         if (addedUser) {
             // if available remove from there
             database.ref('available/' + driver.id).on('value', snapshot => {
@@ -110,3 +117,5 @@ io.on('connection', (socket) => {
         }
     });
 });
+
+var _sockets = new Set();
