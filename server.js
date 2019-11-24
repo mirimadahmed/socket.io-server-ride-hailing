@@ -121,11 +121,6 @@ io.on('connection', (socket) => {
     // when the driver or user disconnects
     socket.on('disconnect', (driver) => {   
         console.log("driver disconnected");
-        if (addedUser) {
-            // if available remove from there
-            database.ref('avaiable').child(driver.id).remove();
-            socket.leave('available')
-        }
     });
     // when the driver or user disconnects
     socket.on('disconnect driver', (driver) => {   
