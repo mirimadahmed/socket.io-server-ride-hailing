@@ -26,8 +26,7 @@ server.listen(port, () => {
 // Routing
 app.use(express.static(path.join(__dirname, 'public')));
 io.on('connection', (socket) => {
-    console.log("connected");
-    socket.emit("connect driver", "goooddd");
+    console.log("Server connected");
     var addedUser = false;
 
     // when the driver connect emitted
@@ -35,7 +34,7 @@ io.on('connection', (socket) => {
         console.log("driver data");
         console.log(driver);
         if (addedUser) {
-            fn('Already connected');
+            console.log('Already connected');
             return;
         }
         // Check if already in available or booked
@@ -55,7 +54,7 @@ io.on('connection', (socket) => {
             });
         socket.userid = driver;
         addedUser = true;
-        // fn('Connected');
+        console.log('Driver Connected');
     });
 
     // when the user connect emitted
@@ -63,7 +62,7 @@ io.on('connection', (socket) => {
         console.log(user);
         console.log(user.userid);
         if (addedUser) {
-            // fn('Already connected');
+            console.log('Already connected');
             return;
         }
         // if already in booked send back the ride to user
@@ -75,7 +74,7 @@ io.on('connection', (socket) => {
                     if (bookedItems[element].userid == user.userid) {
                         socket.userid = user.userid;
                         addedUser = true;
-                        fn(bookedItems[element]);
+                        console.log(bookedItems[element]);
                         return;
                     }
                 });
@@ -83,7 +82,7 @@ io.on('connection', (socket) => {
 
         socket.userid = user.userid;
         addedUser = true;
-        // fn('Connected');
+        console.log('User Connected');
     });
 
     // ask for driver
@@ -96,9 +95,9 @@ io.on('connection', (socket) => {
                 ride['key'] = snapshot.key
                 socket.to('available').emit('ride request', ride);
             })
-            // fn('Sent to drivers');
+            console.log('Sent to drivers');
         } else {
-            // fn('No drivers available');
+            console.log('No drivers available');
         }
     });
 
@@ -124,9 +123,16 @@ io.on('connection', (socket) => {
         console.log("driver disconnected");
         if (addedUser) {
             // if available remove from there
-            database.ref('available/' + driver.id).on('value', snapshot => {
-
-            })
+            socket.leave('available')
+        }
+    });
+    // when the driver or user disconnects
+    socket.on('disconnect driver', (driver) => {   
+        console.log("driver disconnected");
+        if (addedUser) {
+            // if available remove from there
+            database.ref('avaiable').child(driver.id).remove();
+            socket.leave('available')
         }
     });
 });
