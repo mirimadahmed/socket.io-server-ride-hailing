@@ -123,6 +123,7 @@ io.on('connection', (socket) => {
         console.log("driver disconnected");
         if (addedUser) {
             // if available remove from there
+            database.ref('avaiable').child(driver.id).remove();
             socket.leave('available')
         }
     });
