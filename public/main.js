@@ -47,7 +47,7 @@ $(function () {
             $currentInput = $inputMessage.focus();
 
             // Tell the server your username
-            socket.emit('add user', username);
+            // socket.emit('add user', username);
         }
     }
 
@@ -85,18 +85,9 @@ $(function () {
         }
 
         var $usernameDiv = $('<span class="username"/>')
-            .text(data.username)
-            .css('color', getUsernameColor(data.username));
-        var $messageBodyDiv = $('<span class="messageBody">')
-            .text(data.message);
+            .text(data)
 
-        var typingClass = data.typing ? 'typing' : '';
-        var $messageDiv = $('<li class="message"/>')
-            .data('username', data.username)
-            .addClass(typingClass)
-            .append($usernameDiv, $messageBodyDiv);
-
-        addMessageElement($messageDiv, options);
+        addMessageElement($usernameDiv, options);
     }
 
     // Adds the visual chat typing message
@@ -237,31 +228,23 @@ $(function () {
     });
 
     // Whenever the server emits 'new message', update the chat body
-    socket.on('new message', (data) => {
+    socket.on('give ride', (data) => {
+        addChatMessage(data);
+    });
+
+    socket.on('accept ride', (data) => {
         addChatMessage(data);
     });
 
     // Whenever the server emits 'user joined', log it in the chat body
-    socket.on('user joined', (data) => {
+    socket.on('connect driver', (data) => {
         log(data.username + ' joined');
         addParticipantsMessage(data);
     });
 
-    // Whenever the server emits 'user left', log it in the chat body
-    socket.on('user left', (data) => {
-        log(data.username + ' left');
+    socket.on('connect user', (data) => {
+        log(data.username + ' joined');
         addParticipantsMessage(data);
-        removeChatTyping(data);
-    });
-
-    // Whenever the server emits 'typing', show the typing message
-    socket.on('typing', (data) => {
-        addChatTyping(data);
-    });
-
-    // Whenever the server emits 'stop typing', kill the typing message
-    socket.on('stop typing', (data) => {
-        removeChatTyping(data);
     });
 
     socket.on('disconnect', () => {
