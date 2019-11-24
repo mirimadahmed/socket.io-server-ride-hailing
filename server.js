@@ -106,14 +106,15 @@ io.on('connection', (socket) => {
     socket.on('accept ride', (driver) => {
         // if first one send back to user
         database.ref('ride').child(driver.key).once('value', snapshot => {
-            if(snapshot.val() != null) {
-                if(!snapshot.val().isBooked) {
+            let ride = snapshot.val()
+            if(ride != null) {
+                if(!ride.isBooked) {
                     // set is Booked 
                     // attach driver details and send back on firebase and send back msg to user
-                    
-                } else {
-                    // ignore all other drivers
-                }
+                    driver.isBooked = true
+                    database.ref('ride').child(driver.key).set(driver)
+                    socket.emit('got ride', driver)
+                } 
             }
         }) 
     });
