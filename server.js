@@ -41,10 +41,10 @@ io.on('connection', (socket) => {
         // if not in both above add in available
         console.log(driver.id);
         database.ref('available/' + driver.id)
-            .on('value', function (snapshot) {
+            .once('value', function (snapshot) {
                 if (snapshot.val() == null) {
                     database.ref('booked/' + driver.id)
-                        .on('value', function (snapshot) {
+                        .once('value', function (snapshot) {
                             if (snapshot.val() == null) {
                                 database.ref('available').child(driver.id).set(driver);
                                 socket.join('available');
@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
         }
         // if already in booked send back the ride to user
         database.ref('booked')
-            .on('value', function (snapshot) {
+            .once('value', function (snapshot) {
                 if(snapshot.val() != null)
                 bookedItems = snapshot.val();
                 Object.keys(bookedItems).forEach(element => {
