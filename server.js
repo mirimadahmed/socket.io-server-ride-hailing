@@ -43,16 +43,22 @@ io.on('connection', (socket) => {
         database.ref('available/' + driver.id)
             .once('value', function (snapshot) {
                 if (snapshot.val() == null) {
-                    database.ref('booked/' + driver.id)
+                    database.ref('ride')
                         .once('value', function (snapshot) {
-                            if (snapshot.val() == null) {
-                                database.ref('available').child(driver.id).set(driver);
-                                socket.join('available');
-                            }
+                            bookedItems = snapshot.val();
+                            Object.keys(bookedItems).forEach(element => {
+                                if (bookedItems[element].id == driver.id) {
+                                    socket.id = driver.id;
+                                    addedUser = true;
+                                    console.log(bookedItems[element]);
+                                    return;
+                                }
+                            });
+                            database.ref('available').child(driver.id).set(driver);
+                            socket.join('available');
                         });
                 }
             });
-        socket.userid = driver;
         addedUser = true;
         console.log('Driver Connected');
     });
@@ -66,7 +72,7 @@ io.on('connection', (socket) => {
             return;
         }
         // if already in booked send back the ride to user
-        database.ref('booked')
+        database.ref('ride')
             .once('value', function (snapshot) {
                 if(snapshot.val() != null)
                 bookedItems = snapshot.val();
@@ -113,9 +119,21 @@ io.on('connection', (socket) => {
                     // attach driver details and send back on firebase and send back msg to user
                     database.ref('ride').child(driver.key).set(driver)
                     socket.emit('got ride', driver)
+                    socket.leave('available')
+                    database.ref('available').child(driver.id).remove()
                 } 
             }
         }) 
+    });
+
+    socket.on('end ride', (id) => {
+        let rideInfo
+        database.ref('ride').child(id).once('value', (snapshot) => {
+            rideInfo = snapshot.val()
+        })
+        database.ref('ride').child(id).remove()
+        database.ref('available').child(rideInfo.id).set(rideInfo)
+        socket.join('available')
     });
 
     // when the driver or user disconnects
