@@ -111,7 +111,6 @@ io.on('connection', (socket) => {
                 if(!ride.isBooked) {
                     // set is Booked 
                     // attach driver details and send back on firebase and send back msg to user
-                    driver.isBooked = true
                     database.ref('ride').child(driver.key).set(driver)
                     socket.emit('got ride', driver)
                 } 
