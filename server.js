@@ -23,7 +23,7 @@ var database = firebase.database();
 // server.listen(port, () => {
 //     console.log('Server listening at port %d', port);
 // });
-server.listen(3000,"192.168.10.5");
+server.listen();
 // Routing
 app.use(express.static(path.join(__dirname, 'public')));
 io.on('connection', (socket) => {
