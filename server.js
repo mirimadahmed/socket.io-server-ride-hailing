@@ -46,14 +46,17 @@ io.on('connection', (socket) => {
                     database.ref('ride')
                         .once('value', function (snapshot) {
                             bookedItems = snapshot.val();
-                            Object.keys(bookedItems).forEach(element => {
-                                if (bookedItems[element].id == driver.id) {
-                                    socket.id = driver.id;
-                                    addedUser = true;
-                                    console.log(bookedItems[element]);
-                                    return;
-                                }
-                            });
+                            if(bookedItems != null)
+                            {
+                                Object.keys(bookedItems).forEach(element => {
+                                    if (bookedItems[element].id == driver.id) {
+                                        socket.id = driver.id;
+                                        addedUser = true;
+                                        console.log(bookedItems[element]);
+                                        return;
+                                    }
+                                });
+                            }
                             database.ref('available').child(driver.id).set(driver);
                             socket.join('available');
                         });
