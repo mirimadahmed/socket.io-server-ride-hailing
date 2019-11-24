@@ -92,7 +92,10 @@ io.on('connection', (socket) => {
         // send notifications to available drivers
         console.log(ride);
         if (Object.keys(socket.in('available')).length > 0) {
-            socket.to('available').emit('ride request', ride);
+            database.ref('ride').push(ride).then(snapshot => {
+                ride['key'] = snapshot.key
+                socket.to('available').emit('ride request', ride);
+            })
             // fn('Sent to drivers');
         } else {
             // fn('No drivers available');
@@ -103,6 +106,17 @@ io.on('connection', (socket) => {
     // send notification to driver and user
     socket.on('accept ride', (driver) => {
         // if first one send back to user
+        database.ref('ride').child(driver.key).once('value', snapshot => {
+            if(snapshot.val() != null) {
+                if(!snapshot.val().isBooked) {
+                    // set is Booked 
+                    // attach driver details and send back on firebase and send back msg to user
+                    
+                } else {
+                    // ignore all other drivers
+                }
+            }
+        }) 
     });
 
     // when the driver or user disconnects
