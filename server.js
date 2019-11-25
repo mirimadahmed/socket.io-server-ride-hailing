@@ -50,7 +50,8 @@ io.on('connection', (socket) => {
                                 Object.keys(bookedItems).forEach(element => {
                                     if (bookedItems[element].id == driver.id && bookedItems[element].isBooked) {
                                         console.log(bookedItems[element]);
-                                        socket.emit('got ride', bookedItems[element])
+                                        socket.join(element)
+                                        socket.to(element).emit('got ride', bookedItems[element])
                                         haveRide = true
                                         return
                                     }
@@ -70,8 +71,6 @@ io.on('connection', (socket) => {
     // when the user connect emitted
     socket.on('connect user', (user) => {
         console.log(user);
-        console.log(user.userid);
-        socket.emit('user back', user)
         // if already in booked send back the ride to user
         database.ref('ride')
             .once('value', function (snapshot) {
@@ -81,7 +80,9 @@ io.on('connection', (socket) => {
                     Object.keys(bookedItems).forEach(element => {
                         if (bookedItems[element].userid == user.userid && bookedItems[element].isBooked) {
                             addedUser = true;
-                            socket.emit('got ride', bookedItems[element])
+                            socket.join(element)
+                            socket.to(element).emit('got ride', bookedItems[element])
+                            // socket.emit('got ride', bookedItems[element])
                             console.log(bookedItems[element]);
                             return;
                         }
@@ -101,6 +102,7 @@ io.on('connection', (socket) => {
             database.ref('ride').push(ride).then(snapshot => {
                 let newRideObject = { key: snapshot.key, ...ride }
                 socket.to('available').emit('ride request', newRideObject);
+                socket.join(snapshot.key)
             })
             console.log('Sent to drivers');
         } else {
@@ -119,9 +121,10 @@ io.on('connection', (socket) => {
                     // set is Booked 
                     // attach driver details and send back on firebase and send back msg to user
                     database.ref('ride').child(driver.key).set(driver)
-                    socket.emit('got ride', driver)
                     socket.leave('available')
                     database.ref('available').child(driver.id).remove()
+                    socket.join(driver.key)
+                    socket.to(driver.key).emit('got ride', driver)
                 } 
             }
         }) 
