@@ -133,6 +133,7 @@ io.on('connection', (socket) => {
     socket.on('driver location', (driver) => {
         console.log(driver)
         console.log(Object.keys(socket.in(driver.key)).length)
+        socket.join(driver.key)
         io.in(driver.key).emit('latest location', driver)
     })
 
