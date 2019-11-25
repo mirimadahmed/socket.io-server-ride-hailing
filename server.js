@@ -130,6 +130,10 @@ io.on('connection', (socket) => {
         }) 
     });
 
+    socket.on('driver location', (driver) => {
+        io.in(driver.key).emit('latest location', driver)
+    })
+
     socket.on('end ride', (id) => {
         let rideInfo
         database.ref('ride').child(id).once('value', (snapshot) => {
