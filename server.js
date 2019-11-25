@@ -50,8 +50,8 @@ io.on('connection', (socket) => {
                                 Object.keys(bookedItems).forEach(element => {
                                     if (bookedItems[element].id == driver.id && bookedItems[element].isBooked) {
                                         console.log(bookedItems[element]);
-                                        socket.join(element)
-                                        socket.to(element).emit('got ride', bookedItems[element])
+                                        // socket.join(element)
+                                        socket.emit('got ride', bookedItems[element])
                                         haveRide = true
                                         return
                                     }
@@ -80,8 +80,8 @@ io.on('connection', (socket) => {
                     Object.keys(bookedItems).forEach(element => {
                         if (bookedItems[element].userid == user.userid && bookedItems[element].isBooked) {
                             addedUser = true;
-                            socket.join(element)
-                            socket.to(element).emit('got ride', bookedItems[element])
+                            // socket.join(element)
+                            socket.emit('got ride', bookedItems[element])
                             // socket.emit('got ride', bookedItems[element])
                             console.log(bookedItems[element]);
                             return;
@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
             database.ref('ride').push(ride).then(snapshot => {
                 let newRideObject = { key: snapshot.key, ...ride }
                 socket.to('available').emit('ride request', newRideObject);
-                socket.join(snapshot.key)
+                // socket.join(snapshot.key)
             })
             console.log('Sent to drivers');
         } else {
@@ -123,8 +123,8 @@ io.on('connection', (socket) => {
                     database.ref('ride').child(driver.key).set(driver)
                     socket.leave('available')
                     database.ref('available').child(driver.id).remove()
-                    socket.join(driver.key)
-                    socket.to(driver.key).emit('got ride', driver)
+                    // socket.join(driver.key)
+                    socket.emit('got ride', driver)
                 } 
             }
         }) 
