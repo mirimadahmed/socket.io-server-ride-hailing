@@ -75,14 +75,17 @@ io.on('connection', (socket) => {
         database.ref('ride')
             .once('value', function (snapshot) {
                 if(snapshot.val() != null)
-                bookedItems = snapshot.val();
-                Object.keys(bookedItems).forEach(element => {
-                    if (bookedItems[element].userid == user.userid) {
-                        addedUser = true;
-                        console.log(bookedItems[element]);
-                        return;
-                    }
-                });
+                {
+                    bookedItems = snapshot.val();
+                    Object.keys(bookedItems).forEach(element => {
+                        if (bookedItems[element].userid == user.userid) {
+                            addedUser = true;
+                            console.log(bookedItems[element]);
+                            return;
+                        }
+                    });
+                }
+                
             });
         console.log('User Connected');
     });
