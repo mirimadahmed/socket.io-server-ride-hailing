@@ -45,8 +45,9 @@ io.on('connection', (socket) => {
                             if(bookedItems != null)
                             {
                                 Object.keys(bookedItems).forEach(element => {
-                                    if (bookedItems[element].id == driver.id) {
+                                    if (bookedItems[element].id == driver.id && bookedItems[element].isBooked) {
                                         console.log(bookedItems[element]);
+                                        socket.emit('got ride', bookedItems[element])
                                         return;
                                     }
                                 });
