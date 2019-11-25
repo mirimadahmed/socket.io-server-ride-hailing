@@ -37,12 +37,14 @@ io.on('connection', (socket) => {
         // if not in both above add in available
         let haveRide = false
         console.log(driver.id);
-        database.ref('available/' + driver.id)
+        database.ref('available'.child(driver.id)
             .once('value', function (snapshot) {
+                console.log(snapshot.val())
                 if (snapshot.val() == null) {
                     database.ref('ride')
                         .once('value', function (snapshot) {
                             bookedItems = snapshot.val();
+                            console.log(bookedItems)
                             if(bookedItems != null)
                             {
                                 Object.keys(bookedItems).forEach(element => {
@@ -50,6 +52,7 @@ io.on('connection', (socket) => {
                                         console.log(bookedItems[element]);
                                         socket.emit('got ride', bookedItems[element])
                                         haveRide = true
+                                        return
                                     }
                                 });
                             } 
