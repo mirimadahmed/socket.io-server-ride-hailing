@@ -71,6 +71,7 @@ io.on('connection', (socket) => {
     socket.on('connect user', (user) => {
         console.log(user);
         console.log(user.userid);
+        socket.emit('user back', user)
         // if already in booked send back the ride to user
         database.ref('ride')
             .once('value', function (snapshot) {
