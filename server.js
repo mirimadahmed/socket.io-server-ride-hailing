@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
                 {
                     bookedItems = snapshot.val();
                     Object.keys(bookedItems).forEach(element => {
-                        if (bookedItems[element].userid == user.userid) {
+                        if (bookedItems[element].userid == user.userid && bookedItems[element].isBooked) {
                             addedUser = true;
                             socket.emit('got ride', bookedItems[element])
                             console.log(bookedItems[element]);
