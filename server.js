@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
         // if not in both above add in available
         let haveRide = false
         console.log(driver.id);
-        database.ref('available'.child(driver.id)
+        database.ref('available').child(driver.id)
             .once('value', function (snapshot) {
                 console.log(snapshot.val())
                 if (snapshot.val() == null) {
