@@ -128,7 +128,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect driver', (driver) => {   
         console.log("driver disconnected");
         console.log(driver);
-        database.ref('avaiable').child(driver.id).remove();
+        database.ref('available').child(driver.id).remove();
         socket.leave('available')
     });
 });
