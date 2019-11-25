@@ -80,6 +80,7 @@ io.on('connection', (socket) => {
                     Object.keys(bookedItems).forEach(element => {
                         if (bookedItems[element].userid == user.userid) {
                             addedUser = true;
+                            socket.emit('got ride', bookedItems[element])
                             console.log(bookedItems[element]);
                             return;
                         }
