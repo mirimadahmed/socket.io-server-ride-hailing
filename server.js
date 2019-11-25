@@ -38,11 +38,11 @@ io.on('connection', (socket) => {
         let haveRide = false
         console.log(driver.id);
         database.ref('available').child(driver.id)
-            .once('value', function (snapshot) {
+            .once('value', (snapshot) => {
                 console.log(snapshot.val())
                 if (snapshot.val() == null) {
                     database.ref('ride')
-                        .once('value', function (snapshot) {
+                        .once('value', (snapshot) => {
                             bookedItems = snapshot.val();
                             console.log(bookedItems)
                             if(bookedItems != null)
