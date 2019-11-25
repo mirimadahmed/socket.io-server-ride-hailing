@@ -35,6 +35,7 @@ io.on('connection', (socket) => {
         console.log(driver);
         // Check if already in available or booked
         // if not in both above add in available
+        let haveRide = false
         console.log(driver.id);
         database.ref('available/' + driver.id)
             .once('value', function (snapshot) {
@@ -48,15 +49,19 @@ io.on('connection', (socket) => {
                                     if (bookedItems[element].id == driver.id && bookedItems[element].isBooked) {
                                         console.log(bookedItems[element]);
                                         socket.emit('got ride', bookedItems[element])
-                                        return;
+                                        haveRide = true
                                     }
                                 });
-                            }
-                            database.ref('available').child(driver.id).set(driver);
-                            socket.join('available');
+                            } 
+                            
+                            
                         });
                 }
             });
+        if(!haveRide) {
+            database.ref('available').child(driver.id).set(driver);
+            socket.join('available');
+        }
         console.log('Driver Connected');
     });
 
