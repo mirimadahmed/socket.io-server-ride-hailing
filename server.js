@@ -33,10 +33,6 @@ io.on('connection', (socket) => {
     socket.on('connect driver', (driver) => {
         console.log("driver data");
         console.log(driver);
-        if (addedUser) {
-            console.log('Already connected');
-            return;
-        }
         // Check if already in available or booked
         // if not in both above add in available
         console.log(driver.id);
@@ -50,8 +46,6 @@ io.on('connection', (socket) => {
                             {
                                 Object.keys(bookedItems).forEach(element => {
                                     if (bookedItems[element].id == driver.id) {
-                                        socket.id = driver.id;
-                                        addedUser = true;
                                         console.log(bookedItems[element]);
                                         return;
                                     }
@@ -62,7 +56,6 @@ io.on('connection', (socket) => {
                         });
                 }
             });
-        addedUser = true;
         console.log('Driver Connected');
     });
 
@@ -70,10 +63,6 @@ io.on('connection', (socket) => {
     socket.on('connect user', (user) => {
         console.log(user);
         console.log(user.userid);
-        if (addedUser) {
-            console.log('Already connected');
-            return;
-        }
         // if already in booked send back the ride to user
         database.ref('ride')
             .once('value', function (snapshot) {
@@ -81,16 +70,12 @@ io.on('connection', (socket) => {
                 bookedItems = snapshot.val();
                 Object.keys(bookedItems).forEach(element => {
                     if (bookedItems[element].userid == user.userid) {
-                        socket.userid = user.userid;
                         addedUser = true;
                         console.log(bookedItems[element]);
                         return;
                     }
                 });
             });
-
-        socket.userid = user.userid;
-        addedUser = true;
         console.log('User Connected');
     });
 
@@ -143,11 +128,8 @@ io.on('connection', (socket) => {
     socket.on('disconnect driver', (driver) => {   
         console.log("driver disconnected");
         console.log(driver);
-        if (addedUser) {
-            // if available remove from there
-            database.ref('avaiable').child(driver.id).remove();
-            socket.leave('available')
-        }
+        database.ref('avaiable').child(driver.id).remove();
+        socket.leave('available')
     });
 });
 
