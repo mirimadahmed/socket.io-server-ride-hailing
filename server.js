@@ -136,13 +136,17 @@ io.on('connection', (socket) => {
         })
     })
 
-    socket.on('end ride', (id) => {
+    socket.on('end ride', (driver) => {
         let rideInfo
-        database.ref('ride').child(id).once('value', (snapshot) => {
-            rideInfo = snapshot.val()
+        database.ref('ride').child(driver.key).remove()
+        database.ref('available').child(driver.id).set({
+            id: driver.id,
+            username: driver.username,
+            photoUrl: driver.photoUrl,
+            rating: driver.rating,
+            phone: driver.phone
         })
-        database.ref('ride').child(id).remove()
-        database.ref('available').child(rideInfo.id).set(rideInfo)
+        database.ref('finished').child(driver.key).set(driver)
         socket.join('available')
     });
 
