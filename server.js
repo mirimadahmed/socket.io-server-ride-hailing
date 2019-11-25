@@ -95,8 +95,8 @@ io.on('connection', (socket) => {
         console.log(ride);
         if (Object.keys(socket.in('available')).length > 0) {
             database.ref('ride').push(ride).then(snapshot => {
-                ride['key'] = snapshot.key
-                socket.to('available').emit('ride request', ride);
+                let newRideObject = { key: snapshot.key, ...ride }
+                socket.to('available').emit('ride request', newRideObject);
             })
             console.log('Sent to drivers');
         } else {
