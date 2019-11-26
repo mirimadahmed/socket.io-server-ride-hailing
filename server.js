@@ -56,14 +56,15 @@ io.on('connection', (socket) => {
                                     }
                                 });
                             }
-
+                            socket.join('available');
                         });
                 }
+                socket.join('available');
             });
-        if (!haveRide) {
-            database.ref('available').child(driver.id).set(driver);
-            socket.join('available');
-        }
+        // if (!haveRide) {
+        //     database.ref('available').child(driver.id).set(driver);
+        //     socket.join('available');
+        // }
 
         console.log('Driver Connected');
     });
