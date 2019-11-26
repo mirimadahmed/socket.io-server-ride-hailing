@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
         database.ref('available').child(driver.id)
             .once('value', (snapshot) => {
                 console.log(snapshot.val())
-                if (snapshot.val() != null) {
+                if (snapshot.val() == null) {
                     database.ref('ride')
                         .once('value', (snapshot) => {
                             bookedItems = snapshot.val();
@@ -56,19 +56,18 @@ io.on('connection', (socket) => {
                                     }
                                 });
                             }
-                            socket.join('available');
+
                         });
+                } else {
+                    socket.join('available');
+                    return;
                 }
-                else {
+                if (!haveRide) {
                     database.ref('available').child(driver.id).set(driver);
                     socket.join('available');
                 }
-
             });
-        // if (!haveRide) {
-        //     database.ref('available').child(driver.id).set(driver);
-        //     socket.join('available');
-        // }
+
 
         console.log('Driver Connected');
     });
