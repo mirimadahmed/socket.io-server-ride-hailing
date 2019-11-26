@@ -150,6 +150,13 @@ io.on('connection', (socket) => {
         })
         database.ref('finished').child(driver.key).set(driver)
         socket.join('available')
+        io.in(driver.key).emit('end ride', driver)
+        io.of('/').in(driver.key).clients((error, socketIds) => {
+            if (error) throw error;
+
+            socketIds.forEach(socketId => io.sockets.sockets[socketId].leave(driver.key));
+
+        });
     });
 
     // when the driver or user disconnects
