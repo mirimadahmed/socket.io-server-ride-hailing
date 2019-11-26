@@ -45,8 +45,7 @@ io.on('connection', (socket) => {
                         .once('value', (snapshot) => {
                             bookedItems = snapshot.val();
                             console.log(bookedItems)
-                            if(bookedItems != null)
-                            {
+                            if (bookedItems != null) {
                                 Object.keys(bookedItems).forEach(element => {
                                     if (bookedItems[element].id == driver.id && bookedItems[element].isBooked) {
                                         console.log(bookedItems[element]);
@@ -56,15 +55,16 @@ io.on('connection', (socket) => {
                                         return
                                     }
                                 });
-                            } 
-                            if(!haveRide) {
-                                database.ref('available').child(driver.id).set(driver);
-                                socket.join('available');
                             }
+
                         });
                 }
             });
-        
+        if (!haveRide) {
+            database.ref('available').child(driver.id).set(driver);
+            socket.join('available');
+        }
+
         console.log('Driver Connected');
     });
 
@@ -74,8 +74,7 @@ io.on('connection', (socket) => {
         // if already in booked send back the ride to user
         database.ref('ride')
             .once('value', function (snapshot) {
-                if(snapshot.val() != null)
-                {
+                if (snapshot.val() != null) {
                     bookedItems = snapshot.val();
                     Object.keys(bookedItems).forEach(element => {
                         if (bookedItems[element].userid == user.userid && bookedItems[element].isBooked) {
@@ -88,7 +87,7 @@ io.on('connection', (socket) => {
                         }
                     });
                 }
-                
+
             });
         console.log('User Connected');
     });
@@ -116,8 +115,8 @@ io.on('connection', (socket) => {
         // if first one send back to user
         database.ref('ride').child(driver.key).once('value', snapshot => {
             let ride = snapshot.val()
-            if(ride != null) {
-                if(!ride.isBooked) {
+            if (ride != null) {
+                if (!ride.isBooked) {
                     // set is Booked 
                     // attach driver details and send back on firebase and send back msg to user
                     database.ref('ride').child(driver.key).set(driver)
@@ -125,9 +124,9 @@ io.on('connection', (socket) => {
                     database.ref('available').child(driver.id).remove()
                     socket.join(driver.key)
                     io.in(driver.key).emit('got ride', driver)
-                } 
+                }
             }
-        }) 
+        })
     });
 
     socket.on('driver location', (driver) => {
@@ -137,7 +136,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('end ride', (driver) => {
-        let rideInfo
         database.ref('ride').child(driver.key).remove()
         database.ref('available').child(driver.id).set({
             id: driver.id,
@@ -151,7 +149,7 @@ io.on('connection', (socket) => {
     });
 
     // when the driver or user disconnects
-    socket.on('disconnect driver', (driver) => {   
+    socket.on('disconnect driver', (driver) => {
         console.log("driver disconnected");
         console.log(driver);
         database.ref('available').child(driver.id).remove();
