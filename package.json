@@ -9,7 +9,8 @@
     "dependencies": {
         "express": "4.13.4",
         "firebase": "^7.4.0",
-        "socket.io": "^2.3.0"
+        "socket.io": "^2.3.0",
+        "firebase-admin": "^8.6.0"
     },
     "scripts": {
         "start": "node server.js"
