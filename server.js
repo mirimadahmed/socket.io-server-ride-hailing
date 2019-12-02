@@ -111,9 +111,11 @@ io.on('connection', (socket) => {
                 console.log(newRideObject.distance);
                 db.collection('drivers').get().then((snapshot) => {
                     snapshot.forEach((doc) => {
+                        console.log("drivers name");
                         console.log(doc.username);
                       });
                 });
+                console.log("drivers get");
                 io.in('available').emit('ride request', newRideObject);
                 socket.join(snapshot.key)
             })
