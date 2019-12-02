@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var firebase = require("firebase");
+var admin = require('firebase-admin');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
@@ -16,6 +17,8 @@ var firebaseConfig = {
 };
 var bookedItems = [];
 // Initialize Firebase
+admin.initializeApp(firebaseConfig);
+const db = admin.firestore();
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
@@ -106,6 +109,11 @@ io.on('connection', (socket) => {
                 let newRideObject = { key: snapshot.key, ...ride }
                 console.log("user distance");
                 console.log(newRideObject.distance);
+                db.collection('users').get().then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        console.log(doc.username);
+                      });
+                });
                 io.in('available').emit('ride request', newRideObject);
                 socket.join(snapshot.key)
             })
