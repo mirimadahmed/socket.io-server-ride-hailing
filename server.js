@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
                 let newRideObject = { key: snapshot.key, ...ride }
                 console.log("user distance");
                 console.log(newRideObject.distance);
-                db.collection('users').get().then((snapshot) => {
+                db.collection('drivers').get().then((snapshot) => {
                     snapshot.forEach((doc) => {
                         console.log(doc.username);
                       });
