@@ -107,15 +107,6 @@ io.on('connection', (socket) => {
         if (Object.keys(socket.in('available')).length > 0) {
             database.ref('ride').push(ride).then(snapshot => {
                 let newRideObject = { key: snapshot.key, ...ride }
-                console.log("user distance");
-                console.log(newRideObject.distance);
-                db.collection('drivers').get().then((snapshot) => {
-                    snapshot.forEach((doc) => {
-                        console.log("drivers name");
-                        console.log(doc.username);
-                      });
-                });
-                console.log("drivers get");
                 io.in('available').emit('ride request', newRideObject);
                 socket.join(snapshot.key)
             })
