@@ -7,13 +7,13 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 var firebaseConfig = {
-    apiKey: "AIzaSyAFSN77CtgOKAQ2VmJpwS90QuLqjIjyhzI",
-    authDomain: "moover-c222d.firebaseapp.com",
-    databaseURL: "https://moover-c222d.firebaseio.com",
-    projectId: "moover-c222d",
-    storageBucket: "moover-c222d.appspot.com",
-    messagingSenderId: "747533031517",
-    appId: "1:747533031517:web:f2a12d000f1152971ad5b4"
+    apiKey: "--------------------------------------",
+    authDomain: "--------------------------------------",
+    databaseURL: "--------------------------------------",
+    projectId: "--------------------------------------",
+    storageBucket: "--------------------------------------",
+    messagingSenderId: "--------------------------------------",
+    appId: "--------------------------------------"
 };
 var bookedItems = [];
 // Initialize Firebase
